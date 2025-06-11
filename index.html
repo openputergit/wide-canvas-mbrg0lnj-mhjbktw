@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Search - Claymorphism Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --clay-background: #f1f1fa;
+            --clay-primary: #7e6df6;
+            --clay-shadow-light: rgba(255, 255, 255, 0.9);
+            --clay-shadow-dark: rgba(174, 174, 192, 0.4);
+            --clay-card: #ffffff;
+            --clay-text: #4a4a68;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--clay-background);
+            color: var(--clay-text);
+        }
+
+        .clay-card {
+            background: var(--clay-card);
+            border-radius: 24px;
+            box-shadow: 
+                8px 8px 16px var(--clay-shadow-dark),
+                -8px -8px 16px var(--clay-shadow-light);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .clay-button {
+            background: var(--clay-card);
+            border-radius: 16px;
+            box-shadow: 
+                6px 6px 12px var(--clay-shadow-dark),
+                -6px -6px 12px var(--clay-shadow-light);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            transition: all 0.2s ease;
+        }
+
+        .clay-button:hover {
+            box-shadow: 
+                4px 4px 8px var(--clay-shadow-dark),
+                -4px -4px 8px var(--clay-shadow-light);
+            transform: translateY(2px);
+        }
+        
+        .clay-button:active {
+            box-shadow: 
+                inset 4px 4px 8px var(--clay-shadow-dark),
+                inset -4px -4px 8px var(--clay-shadow-light);
+        }
+
+        .clay-input {
+            background: var(--clay-card);
+            border-radius: 16px;
+            box-shadow: 
+                inset 4px 4px 8px var(--clay-shadow-dark),
+                inset -4px -4px 8px var(--clay-shadow-light);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .clay-image {
+            border-radius: 16px;
+            box-shadow: 
+                6px 6px 12px var(--clay-shadow-dark),
+                -6px -6px 12px var(--clay-shadow-light);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .modal {
+            background: rgba(241, 241, 250, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div class="container mx-auto max-w-5xl">
+        <!-- Header with Add Button -->
+        <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
+            <h1 class="text-3xl font-bold text-purple-600">Product Search</h1>
+            <button id="addProductBtn" class="clay-button px-6 py-3 font-semibold flex items-center gap-2 text-purple-600">
+                <i class="bi bi-plus-lg"></i>
+                Add Product
+            </button>
+        </div>
+
+        <!-- Search Bars -->
+        <div class="grid md:grid-cols-2 gap-4 mb-8">
+            <div class="clay-input p-2">
+                <input type="text" id="searchInput" 
+                       class="w-full p-4 bg-transparent border-none outline-none placeholder-gray-400"
+                       placeholder="Search products...">
+            </div>
+            <div class="clay-input p-2">
+                <input type="text" id="saltSearch" 
+                       class="w-full p-4 bg-transparent border-none outline-none placeholder-gray-400"
+                       placeholder="Search by salt...">
+            </div>
+        </div>
+
+        <!-- Product List -->
+        <div id="productList" class="space-y-6">
+            <!-- Products will be inserted here -->
+        </div>
+
+        <!-- Add Product Modal -->
+        <div id="addProductModal" class="modal fixed inset-0 hidden flex items-center justify-center p-4 z-50">
+            <div class="clay-card p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <h2 class="text-2xl font-bold mb-6 text-purple-600">New Product</h2>
+                <form id="addProductForm" class="space-y-4">
+                    <div class="flex flex-col items-center gap-4">
+                        <div id="imagePreviewContainer" class="hidden">
+                            <img id="imagePreview" class="image-preview clay-image" alt="Preview">
+                        </div>
+                        <label class="clay-button px-6 py-3 font-semibold cursor-pointer w-full text-center text-purple-600">
+                            <i class="bi bi-camera me-2"></i>
+                            Add Photo
+                            <input type="file" id="productImage" accept="image/*" class="hidden" required>
+                        </label>
+                    </div>
+                    <div class="space-y-4">
+                        <input type="text" name="productName" placeholder="Product Name" class="w-full p-3 clay-input border-none outline-none" required>
+                        <input type="text" name="companyName" placeholder="Company Name" class="w-full p-3 clay-input border-none outline-none" required>
+                        <input type="text" name="packSize" placeholder="Pack Size" class="w-full p-3 clay-input border-none outline-none" required>
+                        <input type="text" name="mrp" placeholder="MRP" class="w-full p-3 clay-input border-none outline-none" required>
+                        <input type="text" name="salt" placeholder="Product Salt" class="w-full p-3 clay-input border-none outline-none" required>
+                        <input type="text" name="stockiest1" placeholder="Stockiest 1" class="w-full p-3 clay-input border-none outline-none" required>
+                        <input type="text" name="stockiest2" placeholder="Stockiest 2" class="w-full p-3 clay-input border-none outline-none">
+                        <input type="text" name="stockiest3" placeholder="Stockiest 3" class="w-full p-3 clay-input border-none outline-none">
+                        <input type="text" name="stockiest4" placeholder="Stockiest 4" class="w-full p-3 clay-input border-none outline-none">
+                        <input type="text" name="stockiest5" placeholder="Stockiest 5" class="w-full p-3 clay-input border-none outline-none">
+                    </div>
+                    <div class="flex gap-4">
+                        <button type="submit" class="clay-button px-6 py-3 font-semibold flex-1 text-purple-600">Add</button>
+                        <button type="button" onclick="closeModal()" class="clay-button px-6 py-3 font-semibold flex-1">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [
+            {
+                productName: "Paracetamol Plus",
+                companyName: "MediPharm",
+                packSize: "10 tablets",
+                mrp: "₹45.00",
+                salt: "Acetaminophen",
+                stockists: ["MedStore", "HealthPharmacy", "CityMedicals", "MedPlus", "PharmEasy"],
+                image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=200&h=200"
+            }
+        ];
+
+        function createProductCard(product) {
+            // Filter out empty stockists
+            const validStockists = product.stockists.filter(stockist => stockist && stockist.trim() !== "");
+            
+            return `
+                <div class="clay-card p-6">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="flex justify-center items-start">
+                            <img src="${product.image}" alt="${product.productName}" class="clay-image w-full max-w-[200px] h-auto">
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-xl mb-2 text-purple-600">${product.productName}</h3>
+                            <p class="text-gray-600 mb-1"><span class="font-medium">Company:</span> ${product.companyName}</p>
+                            <p class="text-gray-600 mb-1"><span class="font-medium">Pack:</span> ${product.packSize}</p>
+                            <p class="text-gray-600 mb-1"><span class="font-medium">Salt:</span> ${product.salt}</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xl mb-4 text-purple-600">MRP: ${product.mrp}</p>
+                            <div class="space-y-1">
+                                <p class="font-medium">Available at:</p>
+                                ${validStockists.map(stockist => 
+                                    `<p class="text-gray-600"><i class="bi bi-shop me-2"></i>${stockist}</p>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Image Preview
+        document.getElementById('productImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function displayProducts(filteredProducts = products) {
+            const productList = document.getElementById('productList');
+            if (filteredProducts.length === 0) {
+                productList.innerHTML = `
+                    <div class="clay-card p-6 text-center">
+                        <p class="text-gray-600">No products found</p>
+                    </div>
+                `;
+                return;
+            }
+            productList.innerHTML = filteredProducts.map(product => createProductCard(product)).join('');
+        }
+
+        function openModal() {
+            document.getElementById('addProductModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('addProductModal').classList.add('hidden');
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            document.getElementById('addProductForm').reset();
+        }
+
+        document.getElementById('addProductBtn').addEventListener('click', openModal);
+
+        document.getElementById('addProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const imageFile = document.getElementById('productImage').files[0];
+            
+            const stockists = [
+                formData.get('stockiest1'),
+                formData.get('stockiest2'),
+                formData.get('stockiest3'),
+                formData.get('stockiest4'),
+                formData.get('stockiest5')
+            ].filter(stockist => stockist && stockist.trim() !== "");
+            
+            const newProduct = {
+                productName: formData.get('productName'),
+                companyName: formData.get('companyName'),
+                packSize: formData.get('packSize'),
+                mrp: formData.get('mrp'),
+                salt: formData.get('salt'),
+                stockists: stockists,
+                image: imageFile ? URL.createObjectURL(imageFile) : 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=200&h=200'
+            };
+
+            products.unshift(newProduct);
+            displayProducts();
+            closeModal();
+        });
+
+        // Combined search functionality
+        function searchProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const saltTerm = document.getElementById('saltSearch').value.toLowerCase();
+            
+            const filteredProducts = products.filter(product => 
+                (product.productName.toLowerCase().includes(searchTerm) ||
+                product.companyName.toLowerCase().includes(searchTerm)) &&
+                product.salt.toLowerCase().includes(saltTerm)
+            );
+            displayProducts(filteredProducts);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', searchProducts);
+        document.getElementById('saltSearch').addEventListener('input', searchProducts);
+
+        // Initial display
+        displayProducts();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
